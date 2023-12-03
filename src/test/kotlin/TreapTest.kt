@@ -59,4 +59,32 @@ class TreapTest : ShouldSpec({
             }
         }
     }
+
+    should("maintain heap property") {
+        forAll(operations()) { ops ->
+            fun Treap<Int>?.check(parent: Int = Int.MAX_VALUE): Boolean =
+                if (this == null) {
+                    true
+                } else {
+                    priority <= parent && left.check(priority) && right.check(priority)
+                }
+
+            val (treap, _) = ops.apply(randomSource().random)
+            treap.check()
+        }
+    }
+
+    should("be a binary search tree") {
+        forAll(operations()) { ops ->
+            fun Treap<Int>?.check(range: IntRange = Int.MIN_VALUE..Int.MAX_VALUE): Boolean =
+                if (this == null) {
+                    true
+                } else {
+                    key in range && left.check(range.first..key) && right.check(key..range.last)
+                }
+
+            val (treap, _) = ops.apply(randomSource().random)
+            treap.check()
+        }
+    }
 })
