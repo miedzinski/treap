@@ -40,13 +40,12 @@ fun operations(
     arbitrary(
         edgecases = if (0 in count) listOf(emptyList()) else emptyList(),
         shrinker = { operations ->
-            operations.removeLast()
-            listOf(operations)
+            listOf(operations.subList(0, operations.size - 1))
         },
     ) {
         val size = Arb.int(count).bind()
         Arb.intArray(Arb.constant(size), keys ?: Arb.int(0..2 * size)).bind()
-            .mapTo(mutableListOf()) { key ->
+            .map { key ->
                 Arb.enum<TreapOperation>().bind() to key
             }
     }
